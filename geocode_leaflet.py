@@ -3,7 +3,6 @@ import json
 from jinja2 import Template
 import webbrowser
 
-
 # Function to get random user data from RandomUser.me API
 def get_random_user():
     response = requests.get('https://randomuser.me/api/')
@@ -15,7 +14,6 @@ def get_random_user():
             raise Exception("No results found in RandomUser.me API response")
     else:
         raise Exception("Failed to get data from RandomUser.me API")
-
 
 # Function to get location details using OpenCage Geocoding API
 def get_location_details(lat, lng, api_key):
@@ -30,7 +28,6 @@ def get_location_details(lat, lng, api_key):
     else:
         raise Exception("Failed to get data from OpenCage Geocoding API")
 
-
 def main():
     try:
         # Get random user data
@@ -39,8 +36,8 @@ def main():
         lat = float(location['coordinates']['latitude'])
         lng = float(location['coordinates']['longitude'])
 
-        # Replace 'YOUR_OPENCAGE_API_KEY' with your actual OpenCage API key
-        opencage_api_key = 'a77e466bd5624c78ac5a5837f3414676'
+        # Replace 'OPENCARE_API_KEY' with your actual OpenCage API key
+        opencage_api_key = 'OPENCAGE_API_KEY' #api key
         location_details = get_location_details(lat, lng, opencage_api_key)
 
         # Print user and location details
@@ -69,14 +66,15 @@ def main():
                     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 }).addTo(mymap);
                 L.marker([{{ lat }}, {{ lng }}]).addTo(mymap)
-                    .bindPopup("Random Location").openPopup();
+                    .bindPopup("{{ address }}").openPopup();
             </script>
         </body>
         </html>
         """
 
+        address = location_details['formatted']
         template = Template(template_str)
-        html_content = template.render(lat=lat, lng=lng)
+        html_content = template.render(lat=lat, lng=lng, address=address)
 
         # Save HTML content to a file
         map_file = 'leaflet_map.html'
@@ -85,13 +83,11 @@ def main():
         print(f"Map has been saved as {map_file}")
 
         # Open the map in Chrome browser
-        webbrowser.register('chrome', None, webbrowser.BackgroundBrowser('C:\Program Files\Google\Chrome\Application'
-                                                                         '\chrome.exe'))
-        webbrowser.get('chrome').open('file://C:/Users/ADMIN/PycharmProjects/geocoderandom/' + map_file)
+        webbrowser.register('chrome', None, webbrowser.BackgroundBrowser('C:\Program Files\Google\Chrome\Application\chrome.exe'))
+        webbrowser.get('chrome').open('file://' + map_file) #specify your output file location
 
     except Exception as e:
         print("Error:", str(e))
-
 
 if __name__ == '__main__':
     main()
